@@ -3,14 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import routers
 
-from routers.answers import router as a_router
-from routers.avatars import router as av_router
-from routers.contributors import router as c_router
-from routers.demos import router as d_router
-from routers.features import router as f_router
-from routers.locals import router as l_router
-from routers.questions import router as q_router
-from routers.versions import router as v_router
+from .routers.answers import router as a_router
+from .routers.avatars import router as av_router
+from .routers.contributors import router as c_router
+from .routers.demos import router as d_router
+from .routers.features import router as f_router
+from .routers.locals import router as l_router
+from .routers.questions import router as q_router
+from .routers.versions import router as v_router
 
 app = FastAPI(title = "XuraanAPI", docs_url="/")
 
