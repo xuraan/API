@@ -1,6 +1,6 @@
 from deta import Deta
 
-from helper.constants import DEV_KEY
+from ..helper.constants import DEV_KEY
 
 deta = Deta(DEV_KEY)
 

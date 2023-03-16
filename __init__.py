@@ -1,1 +1,0 @@
-from .xuraanapi.main import app
