@@ -1,8 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-import routers
-
 from .routers.answers import router as a_router
 from .routers.avatars import router as av_router
 from .routers.contributors import router as c_router
