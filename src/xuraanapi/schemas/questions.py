@@ -1,25 +1,25 @@
 from typing import List
-from pydantic import UUID4, BaseModel
+from pydantic import BaseModel
 
 
 class LocalizedQuestion(BaseModel):
-    question_id: UUID4
+    question_id: str
     text: str
 
     class Config:
         orm_mode = True    
 
 class QuestionCreate(BaseModel):
-    id: UUID4
+    id: str
     text: List[LocalizedQuestion]
 
 
 class QuestionOut(BaseModel):
-    id: UUID4
+    id: str
     text: str
 
 
 
 class QuestionIn(BaseModel):
-    id: UUID4  #version id
+    id: str  #version id
     language: str
