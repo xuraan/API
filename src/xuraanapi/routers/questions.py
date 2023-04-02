@@ -1,7 +1,14 @@
-from typing import List
-from fastapi import APIRouter
+from typing import List, Union
+from fastapi import APIRouter, Depends
 
-from .database import fr_questions, ar_questions, en_questions
+from ..schemas.questions import QuestionOut
+
+
+from ..deps import get_db
+from ..schemas.versions import VersionOut
+from ..models import LocalizedQuestion, Question, Version, VersionDescription
+from sqlalchemy.orm import Session
+
 
 router = APIRouter(
     prefix="/questions",
@@ -10,6 +17,9 @@ router = APIRouter(
 )
 
 
-@router.get("/")
-async def all(local: str = "en") -> List[dict]:
-    return (fr_questions if local == "fr" else ar_questions if local == "ar" else en_questions).fetch().items
+@router.get("")
+async def get_questions(language: str = "en", db: Session = Depends(get_db)):
+    # Join the Version and VersionDescription tables and filter by language
+    questions = db.query(Question.id, LocalizedQuestion.text).join(LocalizedQuestion).filter(LocalizedQuestion.language == language ).all()
+
+    return [QuestionOut(id=question_id, text=text) for question_id, text in questions]

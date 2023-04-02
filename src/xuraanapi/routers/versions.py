@@ -1,26 +1,12 @@
-"""
-Module to manage endpoints related to quranApp versions (version number and description).
+from typing import List, Union
+from fastapi import APIRouter, Depends
 
-This module defines an API router for endpoints related to quranApp version (version number and description). The router includes two endpoint handlers:
-- '/versions/{local}': Retrieves all versions (version number and description) of quranApp in a given language.
-- '/versions/': Retrieves all versions (version number and description) of quranApp in the default language ("en").
 
-Usage:
-- Import the 'router' object from this module to add version-related endpoints to your FastAPI application.
+from ..deps import get_db
+from ..schemas.versions import VersionOut
+from ..models import Version, VersionDescription
+from sqlalchemy.orm import Session
 
-Example usage:
-    from fastapi import FastAPI
-    from package_name.routers import versions
-    
-    app = FastAPI()
-    
-    app.include_router(versions.router)
-
-"""
-
-from fastapi import APIRouter
-from .database import en_versions, ar_versions, fr_versions
-from typing import List
 
 router = APIRouter(
     prefix="/versions",
@@ -29,15 +15,12 @@ router = APIRouter(
 )
 
 
-@router.get("/")
-async def all(local: str = "en") -> List[dict]:
-    """
-        Retrieves all versions (version number and description) of quranApp in a given language.
+@router.get("", response_model=List[VersionOut])
+async def get_versions(language: str = "en", db: Session = Depends(get_db)):
+    # Join the Version and VersionDescription tables and filter by language
+    versions = db.query(Version.id, VersionDescription.text)\
+        .join(VersionDescription)\
+        .filter(VersionDescription.language == language )\
+        .all()
 
-        Parameters:
-        - `local: str` The language to retrieve versions (version number and description) for. Defaults to "en" if not specified.
-
-        Returns:
-        - `List[Version]` A list of all versions (version number and description) in the given language.
-    """
-    return (fr_versions if local == "fr" else ar_versions if local == "ar" else en_versions).fetch().items
+    return [VersionOut(id=version_id, description=description) for version_id, description in versions]
